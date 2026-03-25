@@ -1143,16 +1143,16 @@ class SelectScene extends Phaser.Scene {
 
       // Quote below each horse
       const quotes = [
-        '"If I smell like a horse\nit\'s not a bad thing"',
+        '"If I smell like\na horse... it\'s not\na bad thing"',
         '"Horses Keep\nMe Stable."',
-        '"I Like Horses, Dogs,\nMaybe 3 People."',
+        '"I Like Horses,\nDogs, Maybe\n3 People."',
         '"Barn Hair,\nDon\'t Care."',
-        '"You either like horses,\nor you\'re wrong."'
+        '"You either like\nhorses, or\nyou\'re wrong."'
       ];
-      this.add.rectangle(x, y + 100, 140, 44, 0x000000, 0.5);
-      this.add.text(x, y + 100, quotes[i], {
-        fontFamily: "'Georgia', serif", fontSize: 9, fontStyle: 'italic',
-        color: '#FFE4B5', align: 'center', lineSpacing: 2
+      this.add.rectangle(x, y + 105, 148, 58, 0x000000, 0.55);
+      this.add.text(x, y + 105, quotes[i], {
+        fontFamily: "'Georgia', serif", fontSize: 12, fontStyle: 'italic',
+        color: '#FFE4B5', align: 'center', lineSpacing: 3
       }).setOrigin(0.5);
 
       this.horses.push({ key, x, y, horse, bg, label });
@@ -1168,13 +1168,38 @@ class SelectScene extends Phaser.Scene {
     this.selectionRing = this.add.circle(0, 0, 64).setStrokeStyle(4, 0xFFD700);
     this.updateSelection();
 
-    // Instructions
-    this.add.rectangle(GW / 2, GH - 100, 500, 70, 0x000000, 0.7);
-    this.add.text(GW / 2, GH - 110, 'Arrow Keys / Tap to select', {
-      fontFamily: "'Georgia', serif", fontSize: 16, color: '#FFFFFF'
+    // Controls guide panel
+    this.add.rectangle(GW / 2, GH - 80, 860, 100, 0x000000, 0.8).setStrokeStyle(1, 0x555555);
+
+    // Desktop controls (left side)
+    this.add.text(GW / 4, GH - 108, 'DESKTOP CONTROLS', {
+      fontFamily: "'Georgia', serif", fontSize: 14, fontStyle: 'bold', color: '#FFD700'
     }).setOrigin(0.5);
-    this.add.text(GW / 2, GH - 88, 'ENTER / SPACE / Tap horse to start', {
-      fontFamily: "'Georgia', serif", fontSize: 16, color: '#FFD700'
+    this.add.text(GW / 4, GH - 88, 'SPACE / UP  =  Jump (x3)', {
+      fontFamily: "'Georgia', serif", fontSize: 14, color: '#FFFFFF'
+    }).setOrigin(0.5);
+    this.add.text(GW / 4, GH - 70, 'RIGHT / LEFT  =  Speed Up / Slow Down', {
+      fontFamily: "'Georgia', serif", fontSize: 14, color: '#FFFFFF'
+    }).setOrigin(0.5);
+    this.add.text(GW / 4, GH - 52, 'ENTER  =  Start Game', {
+      fontFamily: "'Georgia', serif", fontSize: 14, color: '#FFFFFF'
+    }).setOrigin(0.5);
+
+    // Divider
+    this.add.rectangle(GW / 2, GH - 80, 2, 80, 0x555555);
+
+    // Mobile controls (right side)
+    this.add.text(GW * 3 / 4, GH - 108, 'MOBILE CONTROLS', {
+      fontFamily: "'Georgia', serif", fontSize: 14, fontStyle: 'bold', color: '#FFD700'
+    }).setOrigin(0.5);
+    this.add.text(GW * 3 / 4, GH - 88, 'TAP  =  Jump (x3)', {
+      fontFamily: "'Georgia', serif", fontSize: 14, color: '#FFFFFF'
+    }).setOrigin(0.5);
+    this.add.text(GW * 3 / 4, GH - 70, 'TAP HORSE  =  Select & Start', {
+      fontFamily: "'Georgia', serif", fontSize: 14, color: '#FFFFFF'
+    }).setOrigin(0.5);
+    this.add.text(GW * 3 / 4, GH - 52, 'Collect carrots & horseshoes for points!', {
+      fontFamily: "'Georgia', serif", fontSize: 12, fontStyle: 'italic', color: '#90EE90'
     }).setOrigin(0.5);
 
     // Keyboard
