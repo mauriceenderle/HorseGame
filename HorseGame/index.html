@@ -814,39 +814,54 @@ function createJumpImage() {
 
 function createCarrotImage() {
   const c = document.createElement('canvas');
-  c.width = 24; c.height = 36;
+  c.width = 48; c.height = 64;
   const ctx = c.getContext('2d');
 
-  // Carrot body
-  const carG = ctx.createLinearGradient(8, 8, 16, 32);
+  // Carrot body (larger)
+  const carG = ctx.createLinearGradient(14, 14, 34, 58);
   carG.addColorStop(0, '#FF9030');
   carG.addColorStop(0.5, '#FF7010');
   carG.addColorStop(1, '#CC5500');
   ctx.fillStyle = carG;
   ctx.beginPath();
-  ctx.moveTo(8, 10);
-  ctx.quadraticCurveTo(5, 20, 12, 34);
-  ctx.quadraticCurveTo(19, 20, 16, 10);
+  ctx.moveTo(16, 18);
+  ctx.quadraticCurveTo(8, 38, 24, 62);
+  ctx.quadraticCurveTo(40, 38, 32, 18);
   ctx.closePath();
   ctx.fill();
 
+  // Carrot highlight
+  ctx.fillStyle = 'rgba(255,200,100,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(20, 32, 4, 16, -0.1, 0, Math.PI * 2);
+  ctx.fill();
+
   // Carrot lines
-  ctx.strokeStyle = 'rgba(180,80,0,0.3)';
-  ctx.lineWidth = 0.5;
-  for (let y = 14; y < 30; y += 4) {
+  ctx.strokeStyle = 'rgba(180,80,0,0.25)';
+  ctx.lineWidth = 0.8;
+  for (let y = 24; y < 54; y += 6) {
     ctx.beginPath();
-    ctx.moveTo(7, y);
-    ctx.lineTo(17, y);
+    ctx.moveTo(13, y);
+    ctx.lineTo(35, y);
     ctx.stroke();
   }
 
-  // Green top
+  // Green top (leafy)
   ctx.fillStyle = '#228B22';
-  for (let i = -2; i <= 2; i++) {
+  for (let i = -3; i <= 3; i++) {
     ctx.beginPath();
-    ctx.moveTo(12, 10);
-    ctx.quadraticCurveTo(12 + i * 3, 2, 12 + i * 4, 0);
-    ctx.quadraticCurveTo(12 + i * 3, 3, 12, 10);
+    ctx.moveTo(24, 18);
+    ctx.quadraticCurveTo(24 + i * 5, 6, 24 + i * 7, 0);
+    ctx.quadraticCurveTo(24 + i * 5, 8, 24, 18);
+    ctx.fill();
+  }
+  // Darker green accents
+  ctx.fillStyle = '#1A6B1A';
+  for (let i = -1; i <= 1; i += 2) {
+    ctx.beginPath();
+    ctx.moveTo(24, 18);
+    ctx.quadraticCurveTo(24 + i * 4, 4, 24 + i * 6, 1);
+    ctx.quadraticCurveTo(24 + i * 4, 6, 24, 18);
     ctx.fill();
   }
 
@@ -855,30 +870,43 @@ function createCarrotImage() {
 
 function createHorseshoeImage() {
   const c = document.createElement('canvas');
-  c.width = 40; c.height = 40;
+  c.width = 56; c.height = 56;
   const ctx = c.getContext('2d');
 
-  // Horseshoe
+  // Outer glow
+  ctx.fillStyle = 'rgba(255,215,0,0.15)';
+  ctx.beginPath();
+  ctx.arc(28, 26, 26, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Horseshoe (larger, thicker)
   ctx.strokeStyle = '#FFD700';
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 7;
   ctx.lineCap = 'round';
   ctx.beginPath();
-  ctx.arc(20, 18, 14, 0.3, Math.PI - 0.3);
+  ctx.arc(28, 24, 20, 0.3, Math.PI - 0.3);
   ctx.stroke();
 
   // Inner highlight
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(28, 24, 17, 0.5, Math.PI - 0.5);
+  ctx.stroke();
+
+  // Outer shadow
+  ctx.strokeStyle = 'rgba(180,140,0,0.3)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(20, 18, 12, 0.5, Math.PI - 0.5);
+  ctx.arc(28, 24, 23, 0.4, Math.PI - 0.4);
   ctx.stroke();
 
   // Nail holes
   ctx.fillStyle = '#DAA520';
-  const angles = [0.6, 1.1, Math.PI - 1.1, Math.PI - 0.6];
+  const angles = [0.5, 0.9, 1.4, Math.PI - 1.4, Math.PI - 0.9, Math.PI - 0.5];
   angles.forEach(a => {
     ctx.beginPath();
-    ctx.arc(20 + Math.cos(a) * 13, 18 + Math.sin(a) * 13, 1.5, 0, Math.PI * 2);
+    ctx.arc(28 + Math.cos(a) * 19, 24 + Math.sin(a) * 19, 2, 0, Math.PI * 2);
     ctx.fill();
   });
 
@@ -887,23 +915,30 @@ function createHorseshoeImage() {
 
 function createWaterImage() {
   const c = document.createElement('canvas');
-  c.width = 70; c.height = 20;
+  c.width = 80; c.height = 30;
   const ctx = c.getContext('2d');
-  const wG = ctx.createLinearGradient(0, 0, 0, 20);
+  const wG = ctx.createLinearGradient(0, 0, 0, 30);
   wG.addColorStop(0, '#64B5F6');
-  wG.addColorStop(1, '#1E88E5');
+  wG.addColorStop(1, '#1565C0');
   ctx.fillStyle = wG;
-  ctx.fillRect(0, 0, 70, 20);
+  ctx.fillRect(0, 0, 80, 30);
   // Waves
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 1.2;
-  for (let row = 0; row < 3; row++) {
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 1.5;
+  for (let row = 0; row < 4; row++) {
     ctx.beginPath();
-    for (let x = 0; x <= 70; x += 2) {
-      const y = 5 + row * 6 + Math.sin(x * 0.15 + row) * 2;
+    for (let x = 0; x <= 80; x += 2) {
+      const y = 5 + row * 7 + Math.sin(x * 0.14 + row) * 2.5;
       x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
     ctx.stroke();
+  }
+  // Sparkle highlights
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath();
+    ctx.ellipse(10 + Math.random() * 60, 5 + Math.random() * 20, 2, 1, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
   return c.toDataURL();
 }
@@ -1196,9 +1231,11 @@ class GameScene extends Phaser.Scene {
     this.distance = 0;
     this.cleanStreakCounter = 0;
     this.lastMilestone = 0;
-    this.jumpsLeft = 2;
+    this.maxJumps = 3;
+    this.jumpsLeft = 3;
     this.isOnGround = true;
-    this.usedDoubleJump = false;
+    this.usedExtraJump = false;
+    this.baseSpeed = 5;
     this.spawnTimer = 0;
     this.hitCooldown = false;
 
@@ -1234,11 +1271,11 @@ class GameScene extends Phaser.Scene {
       // Reliable ground detection via collider callback
       if (!this.isOnGround) {
         this.isOnGround = true;
-        if (this.usedDoubleJump) {
-          this.usedDoubleJump = false;
+        if (this.usedExtraJump) {
+          this.usedExtraJump = false;
           this.addScore(50, 'STYLE! +50', 0xAA44FF);
         }
-        this.jumpsLeft = 2;
+        this.jumpsLeft = 3;
       }
     });
 
@@ -1247,14 +1284,16 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.collectibles, (p, col) => this.collectItem(col));
 
     // === CONTROLS — keyboard + touch ===
-    // Keyboard
+    // Jump
     this.input.keyboard.on('keydown-SPACE', () => this.jump());
     this.input.keyboard.on('keydown-UP', () => this.jump());
     this.input.keyboard.on('keydown-W', () => this.jump());
 
+    // Speed control — RIGHT arrow speeds up, LEFT slows down
+    this.cursors = this.input.keyboard.createCursorKeys();
+
     // Touch/click — tap anywhere to jump
     this.input.on('pointerdown', (pointer) => {
-      // Only jump if tap is in the lower 2/3 of screen (upper area reserved for HUD)
       if (pointer.y > 60) this.jump();
     });
 
@@ -1285,8 +1324,13 @@ class GameScene extends Phaser.Scene {
     }
 
     // Jump indicator
-    this.jumpIndicator = this.add.text(GW - 180, 25, 'JUMPS: 2', {
+    this.jumpIndicator = this.add.text(GW - 180, 25, 'JUMPS: 3', {
       fontFamily: "'Georgia', serif", fontSize: 14, color: '#88DDFF'
+    }).setOrigin(0.5).setDepth(100);
+
+    // Speed indicator
+    this.speedText = this.add.text(GW - 280, 25, '', {
+      fontFamily: "'Georgia', serif", fontSize: 14, color: '#90EE90'
     }).setOrigin(0.5).setDepth(100);
   }
 
@@ -1294,8 +1338,9 @@ class GameScene extends Phaser.Scene {
     if (!this.gameActive) return;
 
     if (this.jumpsLeft > 0) {
-      const isFirstJump = this.jumpsLeft === 2;
-      const force = isFirstJump ? -420 : -320;
+      // Triple jump: 1st=-420, 2nd=-350, 3rd=-280
+      const jumpNum = this.maxJumps - this.jumpsLeft + 1; // 1, 2, or 3
+      const force = jumpNum === 1 ? -420 : jumpNum === 2 ? -350 : -280;
 
       this.player.setVelocityY(force);
       this.jumpsLeft--;
@@ -1304,14 +1349,16 @@ class GameScene extends Phaser.Scene {
       // Update HUD
       this.jumpIndicator.setText('JUMPS: ' + this.jumpsLeft);
 
-      if (!isFirstJump) {
-        this.usedDoubleJump = true;
+      if (jumpNum >= 2) {
+        this.usedExtraJump = true;
         // Dust puff visual effect
-        for (let i = 0; i < 4; i++) {
+        const puffCount = jumpNum === 3 ? 6 : 4;
+        const puffColor = jumpNum === 3 ? 0xFFDD44 : 0xCCCCCC;
+        for (let i = 0; i < puffCount; i++) {
           const p = this.add.circle(
             this.player.x + Phaser.Math.Between(-12, 12),
             this.player.y + 20,
-            Phaser.Math.Between(3, 7), 0xCCCCCC, 0.5
+            Phaser.Math.Between(3, 7), puffColor, 0.5
           );
           p.setDepth(50);
           this.tweens.add({
@@ -1319,14 +1366,33 @@ class GameScene extends Phaser.Scene {
             duration: 400, onComplete: () => p.destroy()
           });
         }
-        // Double jump text
-        this.showFloatingText(this.player.x, this.player.y - 40, 'DOUBLE JUMP!', '#88DDFF');
+        // Jump label
+        const label = jumpNum === 3 ? 'TRIPLE JUMP!' : 'DOUBLE JUMP!';
+        const color = jumpNum === 3 ? '#FFD700' : '#88DDFF';
+        this.showFloatingText(this.player.x, this.player.y - 40, label, color);
       }
     }
   }
 
   update(time, delta) {
     if (!this.gameActive) return;
+
+    // === SPEED CONTROL — right arrow speeds up, left slows down ===
+    if (this.cursors.right.isDown) {
+      this.scrollSpeed = Math.min(14, this.scrollSpeed + 0.08);
+    } else if (this.cursors.left.isDown) {
+      this.scrollSpeed = Math.max(2, this.scrollSpeed - 0.08);
+    }
+    // Show speed feedback
+    if (this.scrollSpeed > this.baseSpeed + 1) {
+      this.speedText.setText('FAST >>');
+      this.speedText.setColor('#FFD700');
+    } else if (this.scrollSpeed < this.baseSpeed - 1) {
+      this.speedText.setText('<< SLOW');
+      this.speedText.setColor('#88BBFF');
+    } else {
+      this.speedText.setText('');
+    }
 
     // Horse follows player — positioned so the stick aligns with hands
     this.playerHorse.x = this.player.x + 22;
@@ -1356,8 +1422,9 @@ class GameScene extends Phaser.Scene {
     if (milestone > this.lastMilestone) {
       this.lastMilestone = milestone;
       this.addScore(50, '50m BONUS!', 0xFFD700);
-      // Gradually increase speed
-      this.scrollSpeed = Math.min(10, 5 + milestone * 0.3);
+      // Gradually increase base speed
+      this.baseSpeed = Math.min(10, 5 + milestone * 0.3);
+      this.scrollSpeed = Math.max(this.scrollSpeed, this.baseSpeed);
     }
 
     // Spawn obstacles
@@ -1388,7 +1455,7 @@ class GameScene extends Phaser.Scene {
     // Ground detection backup (in case collider doesn't fire)
     if (this.player.body.blocked.down && !this.isOnGround) {
       this.isOnGround = true;
-      this.jumpsLeft = 2;
+      this.jumpsLeft = 3;
     }
 
     // Update jump indicator
