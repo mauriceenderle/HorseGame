@@ -81,16 +81,16 @@ const HORSE_COLORS = {
 };
 
 // ============================================================
-// PHOTOREALISTIC HOBBY HORSE — high-detail Canvas 2D rendering
+// SIDE-VIEW HOBBY HORSE — large, detailed profile facing RIGHT
+// Canvas: 280 wide x 300 tall (head + neck + stick)
 // ============================================================
 function createHobbyHorseImage(cs) {
-  const W = 160, H = 240;
+  const W = 280, H = 300;
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
   const ctx = c.getContext('2d');
   ctx.imageSmoothingEnabled = true;
 
-  // Helper: hex to rgb
   function hexRgb(hex) {
     const n = parseInt(hex.replace('#',''), 16);
     return [(n>>16)&255, (n>>8)&255, n&255];
@@ -100,511 +100,547 @@ function createHobbyHorseImage(cs) {
     return `rgba(${r},${g},${b},${a})`;
   }
 
-  // === WOODEN STICK with grain, knots, and rounded end ===
+  // === WOODEN STICK (angled, held by rider) ===
   ctx.save();
-  const sx = 74, sy = 100, sw = 12, sh = 140;
-  // Main stick gradient
-  const stickG = ctx.createLinearGradient(sx, sy, sx + sw, sy);
+  const stickG = ctx.createLinearGradient(105, 170, 118, 170);
   stickG.addColorStop(0, '#A08050');
-  stickG.addColorStop(0.2, '#D4B88C');
+  stickG.addColorStop(0.25, '#D4B88C');
   stickG.addColorStop(0.5, '#E8D0A8');
-  stickG.addColorStop(0.8, '#C4A06A');
+  stickG.addColorStop(0.75, '#C4A06A');
   stickG.addColorStop(1, '#8A6838');
   ctx.fillStyle = stickG;
-  // Rounded bottom
   ctx.beginPath();
-  ctx.moveTo(sx, sy);
-  ctx.lineTo(sx, sy + sh - 6);
-  ctx.quadraticCurveTo(sx, sy + sh, sx + 3, sy + sh);
-  ctx.lineTo(sx + sw - 3, sy + sh);
-  ctx.quadraticCurveTo(sx + sw, sy + sh, sx + sw, sy + sh - 6);
-  ctx.lineTo(sx + sw, sy);
+  ctx.moveTo(108, 165);
+  ctx.lineTo(100, 295);
+  ctx.lineTo(114, 295);
+  ctx.lineTo(120, 165);
   ctx.closePath();
   ctx.fill();
-  // Wood grain lines
-  ctx.strokeStyle = 'rgba(100, 70, 30, 0.12)';
+  // Wood grain
+  ctx.strokeStyle = 'rgba(100,70,30,0.12)';
   ctx.lineWidth = 0.6;
-  for (let y = sy + 5; y < sy + sh; y += 4) {
+  for (let i = 0; i < 25; i++) {
+    const t = i / 25;
+    const y = 170 + t * 120;
+    const x1 = 108 - t * 8;
+    const x2 = 120 - t * 6;
     ctx.beginPath();
-    ctx.moveTo(sx + 1, y + Math.sin(y * 0.1) * 1.5);
-    ctx.lineTo(sx + sw - 1, y + Math.cos(y * 0.12) * 1.5 + 1);
+    ctx.moveTo(x1 + 2, y + Math.sin(y * 0.08) * 1.5);
+    ctx.lineTo(x2 - 2, y + Math.cos(y * 0.1) * 1.5);
     ctx.stroke();
   }
-  // Wood knot
-  ctx.fillStyle = 'rgba(110, 75, 30, 0.25)';
+  // Stick highlight
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1.2;
   ctx.beginPath();
-  ctx.ellipse(sx + 6, sy + 60, 3, 4, 0.2, 0, Math.PI * 2);
-  ctx.fill();
-  // Stick highlight edge
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(sx + 3, sy + 2);
-  ctx.lineTo(sx + 3, sy + sh - 4);
+  ctx.moveTo(112, 168);
+  ctx.lineTo(104, 290);
   ctx.stroke();
   ctx.restore();
 
-  // === MOUNT COLLAR — where head meets stick ===
-  const collarG = ctx.createLinearGradient(60, 92, 100, 92);
-  collarG.addColorStop(0, '#5A3A20');
-  collarG.addColorStop(0.5, '#8B6040');
-  collarG.addColorStop(1, '#5A3A20');
-  ctx.fillStyle = collarG;
+  // === NECK (connects head to stick) ===
+  const neckG = ctx.createLinearGradient(60, 120, 160, 170);
+  neckG.addColorStop(0, cs.hi);
+  neckG.addColorStop(0.4, cs.body);
+  neckG.addColorStop(0.8, cs.shadow);
+  neckG.addColorStop(1, cs.dark);
+  ctx.fillStyle = neckG;
   ctx.beginPath();
-  ctx.ellipse(80, 96, 22, 8, 0, 0, Math.PI * 2);
+  ctx.moveTo(80, 95);    // top of neck (behind head)
+  ctx.bezierCurveTo(75, 110, 80, 140, 95, 160);
+  ctx.lineTo(130, 175);  // bottom-right of neck
+  ctx.bezierCurveTo(140, 165, 145, 145, 140, 125);
+  ctx.bezierCurveTo(135, 110, 125, 100, 115, 95);
+  ctx.closePath();
   ctx.fill();
-  // Leather stitching on collar
+
+  // Neck shading — dark underside
+  const neckShadow = ctx.createLinearGradient(90, 140, 130, 175);
+  neckShadow.addColorStop(0, 'rgba(0,0,0,0)');
+  neckShadow.addColorStop(1, rgba(cs.dark, 0.35));
+  ctx.fillStyle = neckShadow;
+  ctx.beginPath();
+  ctx.moveTo(80, 95);
+  ctx.bezierCurveTo(75, 110, 80, 140, 95, 160);
+  ctx.lineTo(130, 175);
+  ctx.bezierCurveTo(140, 165, 145, 145, 140, 125);
+  ctx.bezierCurveTo(135, 110, 125, 100, 115, 95);
+  ctx.closePath();
+  ctx.fill();
+
+  // Leather collar where stick meets neck
+  ctx.fillStyle = '#5A3820';
+  ctx.beginPath();
+  ctx.ellipse(113, 170, 18, 7, 0.3, 0, Math.PI * 2);
+  ctx.fill();
   ctx.strokeStyle = '#3A2010';
   ctx.lineWidth = 0.8;
   ctx.setLineDash([2, 2]);
   ctx.beginPath();
-  ctx.ellipse(80, 96, 20, 6, 0, 0, Math.PI * 2);
+  ctx.ellipse(113, 170, 16, 5, 0.3, 0, Math.PI * 2);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // === DROP SHADOW under head ===
-  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  // === DROP SHADOW ===
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
   ctx.beginPath();
-  ctx.ellipse(82, 56, 42, 48, 0.08, 0, Math.PI * 2);
+  ctx.ellipse(140, 70, 62, 55, 0.1, 0, Math.PI * 2);
   ctx.fill();
 
-  // === MAIN HEAD SHAPE — anatomically curved bezier horse head ===
+  // === MAIN HEAD — side profile facing RIGHT ===
+  // The head profile: forehead at top-right, nose pointing right, jaw underneath
   ctx.save();
-  const headG = ctx.createRadialGradient(72, 38, 8, 78, 48, 48);
+  const headG = ctx.createRadialGradient(145, 55, 10, 150, 65, 65);
   headG.addColorStop(0, cs.hi);
-  headG.addColorStop(0.35, cs.body);
-  headG.addColorStop(0.7, cs.shadow);
+  headG.addColorStop(0.3, cs.body);
+  headG.addColorStop(0.65, cs.shadow);
   headG.addColorStop(1, cs.dark);
   ctx.fillStyle = headG;
   ctx.beginPath();
-  // Start at top-left of forehead, trace clockwise
-  ctx.moveTo(48, 22);
-  // Forehead curve up to poll
-  ctx.bezierCurveTo(42, 8, 62, -4, 80, 0);
-  // Poll to right ear area
-  ctx.bezierCurveTo(98, 4, 108, 14, 110, 30);
-  // Right cheek
-  ctx.bezierCurveTo(112, 45, 108, 60, 102, 72);
-  // Right jaw curving to chin
-  ctx.bezierCurveTo(96, 82, 88, 90, 80, 94);
-  // Chin across to left jaw
-  ctx.bezierCurveTo(70, 92, 58, 86, 52, 76);
-  // Left cheek
-  ctx.bezierCurveTo(44, 64, 40, 50, 40, 38);
-  // Back up to forehead
-  ctx.bezierCurveTo(41, 30, 44, 26, 48, 22);
+  // Start at poll (top-back of head), trace clockwise
+  ctx.moveTo(100, 30);
+  // Forehead — curves forward and down
+  ctx.bezierCurveTo(110, 15, 135, 5, 165, 10);
+  // Nasal bone — long straight-ish slope down to nose
+  ctx.bezierCurveTo(185, 14, 210, 30, 225, 55);
+  // Nose tip — rounded
+  ctx.bezierCurveTo(235, 65, 238, 78, 235, 90);
+  // Upper lip curve
+  ctx.bezierCurveTo(232, 100, 225, 108, 215, 112);
+  // Mouth/chin
+  ctx.bezierCurveTo(205, 116, 190, 118, 180, 115);
+  // Lower jaw — sweeps back
+  ctx.bezierCurveTo(160, 112, 140, 108, 120, 108);
+  // Throatlatch area
+  ctx.bezierCurveTo(105, 108, 90, 100, 85, 90);
+  // Back of jaw/cheek up to poll
+  ctx.bezierCurveTo(82, 75, 85, 55, 92, 42);
+  ctx.bezierCurveTo(95, 36, 97, 32, 100, 30);
   ctx.closePath();
   ctx.fill();
 
-  // === DIMENSIONAL SHADING — multiple layers for 3D effect ===
-  // Cheek highlight (left, catching light)
-  const cheekHi = ctx.createRadialGradient(62, 40, 4, 65, 42, 22);
-  cheekHi.addColorStop(0, rgba(cs.hi, 0.5));
-  cheekHi.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = cheekHi;
-  ctx.fill(); // fills same path
-
-  // Under-jaw shadow
-  const jawShadow = ctx.createRadialGradient(76, 85, 5, 76, 82, 25);
-  jawShadow.addColorStop(0, rgba(cs.dark, 0.4));
-  jawShadow.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = jawShadow;
+  // === 3D SHADING LAYERS ===
+  // Forehead highlight
+  const foreHi = ctx.createRadialGradient(155, 30, 5, 155, 40, 35);
+  foreHi.addColorStop(0, rgba(cs.hi, 0.55));
+  foreHi.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = foreHi;
   ctx.fill();
+
+  // Cheek/jowl highlight
+  const cheekG = ctx.createRadialGradient(135, 75, 5, 140, 80, 30);
+  cheekG.addColorStop(0, rgba(cs.hi, 0.3));
+  cheekG.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = cheekG;
+  ctx.fill();
+
+  // Jaw shadow (underneath)
+  const jawG = ctx.createLinearGradient(120, 95, 120, 118);
+  jawG.addColorStop(0, 'rgba(0,0,0,0)');
+  jawG.addColorStop(1, rgba(cs.dark, 0.5));
+  ctx.fillStyle = jawG;
+  ctx.fill();
+
+  // Nasal bone ridge highlight
+  ctx.strokeStyle = rgba(cs.hi, 0.2);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(145, 18);
+  ctx.bezierCurveTo(170, 22, 200, 38, 220, 58);
+  ctx.stroke();
   ctx.restore();
 
-  // === MUZZLE — soft pink/tan area ===
-  const muzzG = ctx.createRadialGradient(78, 82, 4, 78, 82, 18);
+  // === MUZZLE — softer, pinker area at nose end ===
+  const muzzG = ctx.createRadialGradient(225, 88, 5, 225, 90, 22);
   muzzG.addColorStop(0, '#EAD4BE');
-  muzzG.addColorStop(0.4, '#D8BCA0');
+  muzzG.addColorStop(0.5, '#D8BCA0');
   muzzG.addColorStop(0.8, '#C4A080');
-  muzzG.addColorStop(1, rgba(cs.body, 0.6));
+  muzzG.addColorStop(1, rgba(cs.body, 0.4));
   ctx.fillStyle = muzzG;
   ctx.beginPath();
-  ctx.ellipse(78, 84, 20, 14, 0.05, 0, Math.PI * 2);
+  ctx.ellipse(222, 92, 20, 18, 0.15, 0, Math.PI * 2);
   ctx.fill();
 
-  // Muzzle whisker bumps
-  ctx.fillStyle = 'rgba(200,180,150,0.3)';
-  for (let i = 0; i < 5; i++) {
+  // Whisker bumps
+  ctx.fillStyle = 'rgba(200,180,150,0.25)';
+  for (let i = 0; i < 6; i++) {
     ctx.beginPath();
-    ctx.ellipse(66 + i * 6, 80 + (i % 2) * 3, 1.2, 1.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(218 + Math.random() * 16, 95 + Math.random() * 12, 1, 1, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // === NOSTRILS — deep, detailed ===
-  // Left nostril
-  const nosG1 = ctx.createRadialGradient(68, 82, 1, 68, 82, 5);
-  nosG1.addColorStop(0, '#1A0A02');
-  nosG1.addColorStop(0.6, '#3A1A08');
-  nosG1.addColorStop(1, '#5A3020');
-  ctx.fillStyle = nosG1;
+  // === NOSTRIL (side view — one large comma-shaped nostril) ===
+  ctx.save();
+  const nosG = ctx.createRadialGradient(232, 78, 2, 230, 80, 10);
+  nosG.addColorStop(0, '#1A0A02');
+  nosG.addColorStop(0.5, '#2A1508');
+  nosG.addColorStop(0.8, '#4A2A15');
+  nosG.addColorStop(1, rgba(cs.shadow, 0.5));
+  ctx.fillStyle = nosG;
   ctx.beginPath();
-  ctx.ellipse(68, 82, 5, 3.5, -0.2, 0, Math.PI * 2);
+  // Comma/kidney shape
+  ctx.moveTo(236, 72);
+  ctx.bezierCurveTo(240, 76, 240, 85, 235, 88);
+  ctx.bezierCurveTo(230, 91, 225, 86, 226, 80);
+  ctx.bezierCurveTo(227, 76, 232, 72, 236, 72);
   ctx.fill();
   // Nostril rim highlight
-  ctx.strokeStyle = rgba(cs.hi, 0.3);
-  ctx.lineWidth = 0.6;
+  ctx.strokeStyle = rgba(cs.hi, 0.35);
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.ellipse(68, 81, 5.5, 3.2, -0.2, Math.PI * 1.2, Math.PI * 1.8);
+  ctx.moveTo(236, 73);
+  ctx.bezierCurveTo(239, 76, 239, 83, 236, 86);
   ctx.stroke();
-
-  // Right nostril
-  const nosG2 = ctx.createRadialGradient(88, 82, 1, 88, 82, 5);
-  nosG2.addColorStop(0, '#1A0A02');
-  nosG2.addColorStop(0.6, '#3A1A08');
-  nosG2.addColorStop(1, '#5A3020');
-  ctx.fillStyle = nosG2;
+  // Inner depth
+  ctx.fillStyle = '#0A0502';
   ctx.beginPath();
-  ctx.ellipse(88, 82, 5, 3.5, 0.2, 0, Math.PI * 2);
+  ctx.ellipse(232, 80, 4, 5, 0.2, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = rgba(cs.hi, 0.3);
-  ctx.lineWidth = 0.6;
-  ctx.beginPath();
-  ctx.ellipse(88, 81, 5.5, 3.2, 0.2, Math.PI * 1.2, Math.PI * 1.8);
-  ctx.stroke();
+  ctx.restore();
 
   // === MOUTH LINE ===
-  ctx.strokeStyle = 'rgba(80, 45, 25, 0.5)';
-  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = rgba(cs.dark, 0.5);
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(62, 88);
-  ctx.quadraticCurveTo(78, 92, 94, 88);
+  ctx.moveTo(180, 113);
+  ctx.bezierCurveTo(195, 115, 215, 112, 230, 102);
+  ctx.stroke();
+  // Lip edge
+  ctx.strokeStyle = rgba(cs.dark, 0.2);
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(180, 115);
+  ctx.bezierCurveTo(195, 117, 215, 114, 228, 104);
   ctx.stroke();
 
   // === FACE MARKINGS ===
   if (cs.marking === 'star') {
-    const starG = ctx.createRadialGradient(76, 22, 2, 76, 22, 10);
-    starG.addColorStop(0, cs.markColor);
-    starG.addColorStop(0.7, rgba(cs.markColor, 0.6));
-    starG.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = starG;
+    const sg = ctx.createRadialGradient(150, 30, 3, 150, 30, 14);
+    sg.addColorStop(0, cs.markColor);
+    sg.addColorStop(0.6, rgba(cs.markColor, 0.5));
+    sg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = sg;
     ctx.beginPath();
-    ctx.ellipse(76, 22, 9, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(150, 30, 12, 14, 0.1, 0, Math.PI * 2);
     ctx.fill();
   } else if (cs.marking === 'blaze') {
-    ctx.fillStyle = cs.markColor;
-    ctx.beginPath();
-    ctx.moveTo(72, 8);
-    ctx.bezierCurveTo(68, 18, 64, 38, 62, 55);
-    ctx.bezierCurveTo(60, 68, 64, 78, 70, 84);
-    ctx.lineTo(86, 84);
-    ctx.bezierCurveTo(92, 78, 96, 68, 94, 55);
-    ctx.bezierCurveTo(92, 38, 88, 18, 84, 8);
-    ctx.bezierCurveTo(80, 4, 76, 4, 72, 8);
-    ctx.fill();
-    // Soft edges
-    ctx.fillStyle = rgba(cs.body, 0.25);
-    ctx.beginPath();
-    ctx.moveTo(72, 8);
-    ctx.bezierCurveTo(68, 18, 64, 38, 62, 55);
-    ctx.lineTo(65, 55);
-    ctx.bezierCurveTo(67, 38, 70, 18, 74, 8);
-    ctx.closePath();
-    ctx.fill();
-  } else if (cs.marking === 'snip') {
-    const snipG = ctx.createRadialGradient(78, 84, 2, 78, 84, 8);
-    snipG.addColorStop(0, cs.markColor);
-    snipG.addColorStop(0.7, rgba(cs.markColor, 0.5));
-    snipG.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = snipG;
-    ctx.beginPath();
-    ctx.ellipse(78, 84, 7, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (cs.marking === 'tobiano') {
-    // Large white patches
     ctx.fillStyle = rgba(cs.markColor, 0.85);
     ctx.beginPath();
-    ctx.moveTo(55, 40);
-    ctx.bezierCurveTo(48, 50, 50, 70, 60, 80);
-    ctx.bezierCurveTo(70, 88, 85, 86, 90, 78);
-    ctx.bezierCurveTo(95, 65, 90, 45, 80, 38);
-    ctx.bezierCurveTo(70, 32, 60, 34, 55, 40);
+    ctx.moveTo(148, 15);
+    ctx.bezierCurveTo(142, 25, 138, 45, 140, 65);
+    ctx.bezierCurveTo(142, 80, 150, 95, 165, 105);
+    ctx.lineTo(175, 105);
+    ctx.bezierCurveTo(185, 95, 190, 80, 188, 65);
+    ctx.bezierCurveTo(186, 45, 175, 25, 168, 15);
+    ctx.bezierCurveTo(162, 10, 154, 10, 148, 15);
+    ctx.fill();
+  } else if (cs.marking === 'snip') {
+    const sg = ctx.createRadialGradient(222, 95, 3, 222, 95, 10);
+    sg.addColorStop(0, cs.markColor);
+    sg.addColorStop(0.6, rgba(cs.markColor, 0.4));
+    sg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = sg;
+    ctx.beginPath();
+    ctx.ellipse(222, 95, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (cs.marking === 'tobiano') {
+    ctx.fillStyle = rgba(cs.markColor, 0.8);
+    ctx.beginPath();
+    ctx.moveTo(120, 50);
+    ctx.bezierCurveTo(110, 65, 115, 90, 135, 105);
+    ctx.bezierCurveTo(155, 115, 180, 110, 195, 95);
+    ctx.bezierCurveTo(210, 75, 195, 50, 175, 40);
+    ctx.bezierCurveTo(155, 32, 130, 38, 120, 50);
     ctx.fill();
   }
 
   // === DAPPLES ===
   if (cs.dapple) {
-    for (let i = 0; i < 14; i++) {
-      const x = 48 + Math.random() * 60;
-      const y = 15 + Math.random() * 65;
-      const r = 3 + Math.random() * 5;
+    for (let i = 0; i < 20; i++) {
+      const x = 95 + Math.random() * 130;
+      const y = 20 + Math.random() * 85;
+      const r = 4 + Math.random() * 7;
       const dG = ctx.createRadialGradient(x, y, 0, x, y, r);
-      dG.addColorStop(0, rgba(cs.hi, 0.35));
+      dG.addColorStop(0, rgba(cs.hi, 0.3));
       dG.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = dG;
       ctx.beginPath();
-      ctx.ellipse(x, y, r, r * 0.9, Math.random(), 0, Math.PI * 2);
+      ctx.ellipse(x, y, r, r * 0.85, Math.random(), 0, Math.PI * 2);
       ctx.fill();
     }
   }
 
-  // === EYES — detailed with iris rings, pupil, multiple highlights ===
-  function drawEye(ex, ey, flipX) {
-    // Eye socket shadow
-    ctx.fillStyle = rgba(cs.dark, 0.3);
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 11, 10, flipX * 0.15, 0, Math.PI * 2);
-    ctx.fill();
+  // === EYE (side view — one large, expressive almond eye) ===
+  const ex = 130, ey = 52;
 
-    // Sclera (white)
-    const sclG = ctx.createRadialGradient(ex, ey, 2, ex, ey, 9);
-    sclG.addColorStop(0, '#FAFAFA');
-    sclG.addColorStop(0.7, '#F0EDE8');
-    sclG.addColorStop(1, '#D8D0C8');
-    ctx.fillStyle = sclG;
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 9, 8.5, flipX * 0.1, 0, Math.PI * 2);
-    ctx.fill();
+  // Eye socket depression
+  ctx.fillStyle = rgba(cs.dark, 0.25);
+  ctx.beginPath();
+  ctx.ellipse(ex, ey, 18, 14, 0.1, 0, Math.PI * 2);
+  ctx.fill();
 
-    // Iris — deep brown with ring detail
-    const irisG = ctx.createRadialGradient(ex, ey, 1, ex, ey, 6.5);
-    irisG.addColorStop(0, '#2A1505');
-    irisG.addColorStop(0.3, '#4A2815');
-    irisG.addColorStop(0.6, '#3A1A08');
-    irisG.addColorStop(0.85, '#2A1205');
-    irisG.addColorStop(1, '#1A0A02');
-    ctx.fillStyle = irisG;
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 6.5, 7, 0, 0, Math.PI * 2);
-    ctx.fill();
+  // Sclera
+  const sclG = ctx.createRadialGradient(ex + 2, ey - 1, 2, ex, ey, 13);
+  sclG.addColorStop(0, '#FAFAFA');
+  sclG.addColorStop(0.6, '#F0EDE8');
+  sclG.addColorStop(1, '#D0C8C0');
+  ctx.fillStyle = sclG;
+  ctx.beginPath();
+  // Almond shape
+  ctx.moveTo(ex - 14, ey);
+  ctx.bezierCurveTo(ex - 14, ey - 10, ex - 4, ey - 13, ex + 2, ey - 12);
+  ctx.bezierCurveTo(ex + 10, ey - 11, ex + 16, ey - 5, ex + 16, ey);
+  ctx.bezierCurveTo(ex + 16, ey + 5, ex + 10, ey + 11, ex + 2, ey + 12);
+  ctx.bezierCurveTo(ex - 4, ey + 13, ex - 14, ey + 10, ex - 14, ey);
+  ctx.fill();
 
-    // Iris ring detail
-    ctx.strokeStyle = 'rgba(80, 50, 20, 0.3)';
-    ctx.lineWidth = 0.4;
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 4, 4.5, 0, 0, Math.PI * 2);
-    ctx.stroke();
+  // Iris
+  const iG = ctx.createRadialGradient(ex + 2, ey, 2, ex + 2, ey, 9);
+  iG.addColorStop(0, '#2A1505');
+  iG.addColorStop(0.25, '#4A2815');
+  iG.addColorStop(0.5, '#3A1A08');
+  iG.addColorStop(0.75, '#2A1205');
+  iG.addColorStop(1, '#1A0A02');
+  ctx.fillStyle = iG;
+  ctx.beginPath();
+  ctx.ellipse(ex + 2, ey, 9, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
 
-    // Pupil
-    ctx.fillStyle = '#000';
+  // Iris fibre detail
+  ctx.strokeStyle = 'rgba(80,50,20,0.15)';
+  ctx.lineWidth = 0.3;
+  for (let a = 0; a < Math.PI * 2; a += 0.4) {
     ctx.beginPath();
-    ctx.ellipse(ex, ey + 0.5, 3.5, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Primary specular highlight
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.ellipse(ex + 2.5, ey - 2.5, 3, 2.5, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Secondary smaller highlight
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.beginPath();
-    ctx.ellipse(ex - 2, ey + 2, 1.5, 1, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyelid crease
-    ctx.strokeStyle = rgba(cs.dark, 0.4);
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(ex, ey - 1, 10, 7, flipX * 0.1, Math.PI * 1.1, Math.PI * 1.9);
-    ctx.stroke();
-
-    // Lower eyelid
-    ctx.strokeStyle = rgba(cs.shadow, 0.3);
-    ctx.lineWidth = 0.7;
-    ctx.beginPath();
-    ctx.ellipse(ex, ey + 1, 9, 7, flipX * 0.1, 0.1, Math.PI * 0.9);
+    ctx.moveTo(ex + 2 + Math.cos(a) * 3, ey + Math.sin(a) * 3.5);
+    ctx.lineTo(ex + 2 + Math.cos(a) * 8, ey + Math.sin(a) * 9);
     ctx.stroke();
   }
 
-  drawEye(58, 36, -1);
-  drawEye(98, 36, 1);
+  // Pupil
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.ellipse(ex + 2, ey + 0.5, 5, 6.5, 0, 0, Math.PI * 2);
+  ctx.fill();
 
-  // === EARS — detailed with inner pink, fur tufts ===
-  function drawEar(ex, ey, angle) {
-    ctx.save();
-    ctx.translate(ex, ey);
-    ctx.rotate(angle);
-    // Outer ear
-    const earG = ctx.createLinearGradient(-4, -16, 4, -16);
-    earG.addColorStop(0, cs.shadow);
-    earG.addColorStop(0.5, cs.body);
-    earG.addColorStop(1, cs.shadow);
-    ctx.fillStyle = earG;
-    ctx.beginPath();
-    ctx.moveTo(-7, 0);
-    ctx.bezierCurveTo(-9, -8, -5, -20, 0, -24);
-    ctx.bezierCurveTo(5, -20, 9, -8, 7, 0);
-    ctx.closePath();
-    ctx.fill();
-    // Inner ear (pink)
-    const innerG = ctx.createLinearGradient(0, -18, 0, -2);
-    innerG.addColorStop(0, cs.earInner);
-    innerG.addColorStop(1, rgba(cs.earInner, 0.3));
-    ctx.fillStyle = innerG;
-    ctx.beginPath();
-    ctx.moveTo(-4, -2);
-    ctx.bezierCurveTo(-5, -8, -3, -16, 0, -20);
-    ctx.bezierCurveTo(3, -16, 5, -8, 4, -2);
-    ctx.closePath();
-    ctx.fill();
-    // Ear fur tufts at base
-    ctx.strokeStyle = rgba(cs.mane, 0.4);
-    ctx.lineWidth = 0.8;
-    for (let i = 0; i < 3; i++) {
-      ctx.beginPath();
-      ctx.moveTo(-3 + i * 3, 0);
-      ctx.lineTo(-2 + i * 3, 4);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
+  // Primary specular highlight (large, bright)
+  ctx.fillStyle = '#FFF';
+  ctx.beginPath();
+  ctx.ellipse(ex + 6, ey - 4, 4.5, 3.5, -0.3, 0, Math.PI * 2);
+  ctx.fill();
 
-  drawEar(50, 12, -0.35);
-  drawEar(106, 12, 0.35);
+  // Secondary highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.beginPath();
+  ctx.ellipse(ex - 2, ey + 3, 2.5, 1.5, 0.4, 0, Math.PI * 2);
+  ctx.fill();
 
-  // === MANE — flowing yarn-like strands ===
+  // Upper eyelid (heavy, expressive)
+  ctx.strokeStyle = rgba(cs.dark, 0.6);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(ex - 15, ey + 1);
+  ctx.bezierCurveTo(ex - 10, ey - 14, ex + 8, ey - 14, ex + 17, ey - 1);
+  ctx.stroke();
+
+  // Eyelashes (top)
+  ctx.strokeStyle = rgba(cs.dark, 0.5);
+  ctx.lineWidth = 1.2;
   ctx.lineCap = 'round';
-  for (let i = 0; i < 20; i++) {
-    const startX = 50 + i * 3.2;
-    const startY = 6 + Math.sin(i * 0.5) * 3;
-    const endX = startX - 3 + Math.sin(i * 0.7) * 5;
-    const endY = startY - 14 - Math.random() * 8;
-    const cp1x = startX + Math.sin(i * 1.2) * 4;
-    const cp1y = startY - 6;
-    const cp2x = endX + Math.cos(i * 0.8) * 3;
-    const cp2y = endY + 4;
-
-    // Shadow strand
-    ctx.strokeStyle = rgba(cs.mane, 0.5);
-    ctx.lineWidth = 3;
+  for (let i = 0; i < 5; i++) {
+    const t = 0.2 + i * 0.15;
+    const lx = ex - 10 + t * 28;
+    const ly = ey - 12 + Math.sin(t * Math.PI) * 1;
     ctx.beginPath();
-    ctx.moveTo(startX + 0.5, startY + 0.5);
-    ctx.bezierCurveTo(cp1x + 0.5, cp1y + 0.5, cp2x + 0.5, cp2y + 0.5, endX + 0.5, endY + 0.5);
+    ctx.moveTo(lx, ly);
+    ctx.lineTo(lx - 2 + i, ly - 5 - Math.random() * 3);
+    ctx.stroke();
+  }
+
+  // Lower eyelid
+  ctx.strokeStyle = rgba(cs.shadow, 0.35);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ex - 13, ey + 1);
+  ctx.bezierCurveTo(ex - 6, ey + 13, ex + 8, ey + 13, ex + 16, ey + 1);
+  ctx.stroke();
+
+  // === EAR (side view — one ear visible, pointing up-forward) ===
+  ctx.save();
+  ctx.translate(115, 18);
+  ctx.rotate(-0.2);
+  // Outer ear
+  const earG = ctx.createLinearGradient(-6, -28, 6, -28);
+  earG.addColorStop(0, cs.shadow);
+  earG.addColorStop(0.4, cs.body);
+  earG.addColorStop(0.7, cs.hi);
+  earG.addColorStop(1, cs.shadow);
+  ctx.fillStyle = earG;
+  ctx.beginPath();
+  ctx.moveTo(-10, 4);
+  ctx.bezierCurveTo(-14, -10, -8, -28, 0, -36);
+  ctx.bezierCurveTo(8, -28, 14, -10, 10, 4);
+  ctx.closePath();
+  ctx.fill();
+  // Inner ear
+  const innerG = ctx.createLinearGradient(0, -30, 0, 0);
+  innerG.addColorStop(0, cs.earInner);
+  innerG.addColorStop(1, rgba(cs.earInner, 0.2));
+  ctx.fillStyle = innerG;
+  ctx.beginPath();
+  ctx.moveTo(-6, 0);
+  ctx.bezierCurveTo(-8, -10, -5, -24, 0, -30);
+  ctx.bezierCurveTo(5, -24, 8, -10, 6, 0);
+  ctx.closePath();
+  ctx.fill();
+  // Ear edge highlight
+  ctx.strokeStyle = rgba(cs.hi, 0.3);
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(8, 2);
+  ctx.bezierCurveTo(12, -10, 6, -26, 0, -34);
+  ctx.stroke();
+  ctx.restore();
+
+  // === MANE — flowing down the crest of the neck, cascading left ===
+  ctx.lineCap = 'round';
+  // Mane attaches along the top of the head/neck
+  for (let i = 0; i < 30; i++) {
+    const t = i / 30;
+    // Follow the crest from poll to withers
+    const sx = 105 + t * 30;
+    const sy = 28 + t * 65 + Math.sin(t * 3) * 5;
+    // Strands fall to the left (away from viewer in side view)
+    const endX = sx - 20 - Math.random() * 15;
+    const endY = sy + 10 + Math.random() * 15;
+    const cpx = sx - 10 + Math.sin(i * 0.5) * 8;
+    const cpy = sy + 5;
+
+    // Shadow
+    ctx.strokeStyle = rgba(cs.mane, 0.4);
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(sx + 1, sy + 1);
+    ctx.quadraticCurveTo(cpx + 1, cpy + 1, endX + 1, endY + 1);
     ctx.stroke();
 
     // Main strand
     ctx.strokeStyle = i % 3 === 0 ? cs.maneHi : cs.mane;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
+    ctx.moveTo(sx, sy);
+    ctx.quadraticCurveTo(cpx, cpy, endX, endY);
     ctx.stroke();
 
-    // Highlight strand
+    // Highlight
     if (i % 4 === 0) {
-      ctx.strokeStyle = rgba(cs.maneHi, 0.4);
+      ctx.strokeStyle = rgba(cs.maneHi, 0.35);
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(startX - 0.5, startY - 0.5);
-      ctx.bezierCurveTo(cp1x - 0.5, cp1y - 0.5, cp2x - 0.5, cp2y - 0.5, endX - 0.5, endY - 0.5);
+      ctx.moveTo(sx - 1, sy - 1);
+      ctx.quadraticCurveTo(cpx - 1, cpy - 1, endX - 1, endY - 1);
       ctx.stroke();
     }
   }
 
-  // === BRIDLE — leather straps with stitching and buckles ===
-  const bridleColor = '#3A2010';
-  const bridleHi = '#6A4030';
+  // === BRIDLE (side view) ===
+  const bCol = '#3A2010';
 
-  // Crown piece (over poll)
-  ctx.strokeStyle = bridleColor;
+  // Crownpiece (over poll, behind ear)
+  ctx.strokeStyle = bCol;
   ctx.lineWidth = 3.5;
   ctx.beginPath();
-  ctx.moveTo(52, 18);
-  ctx.quadraticCurveTo(78, 10, 104, 18);
-  ctx.stroke();
-  // Crown highlight
-  ctx.strokeStyle = rgba(bridleHi, 0.5);
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(54, 17);
-  ctx.quadraticCurveTo(78, 9, 102, 17);
+  ctx.moveTo(100, 32);
+  ctx.quadraticCurveTo(110, 20, 125, 22);
   ctx.stroke();
 
-  // Browband
-  ctx.strokeStyle = bridleColor;
+  // Browband (across forehead)
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(50, 24);
-  ctx.quadraticCurveTo(78, 18, 106, 24);
+  ctx.moveTo(125, 28);
+  ctx.quadraticCurveTo(140, 24, 150, 28);
   ctx.stroke();
 
-  // Cheekpieces
+  // Cheekpiece (vertical, down the face)
   ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(52, 24);
-  ctx.quadraticCurveTo(48, 45, 52, 68);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(104, 24);
-  ctx.quadraticCurveTo(108, 45, 104, 68);
+  ctx.moveTo(145, 28);
+  ctx.bezierCurveTo(148, 45, 155, 65, 168, 82);
   ctx.stroke();
 
-  // Noseband
+  // Noseband (across the nose)
   ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(56, 68);
-  ctx.quadraticCurveTo(78, 72, 100, 68);
+  ctx.moveTo(168, 82);
+  ctx.bezierCurveTo(180, 80, 200, 76, 215, 78);
   ctx.stroke();
 
-  // Throatlatch
+  // Throatlatch (under jaw)
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(60, 78);
-  ctx.quadraticCurveTo(66, 90, 78, 92);
-  ctx.quadraticCurveTo(90, 90, 96, 78);
+  ctx.moveTo(100, 35);
+  ctx.bezierCurveTo(105, 55, 115, 80, 130, 100);
   ctx.stroke();
 
-  // Buckles (gold/brass)
-  function drawBuckle(bx, by) {
-    ctx.fillStyle = '#D4A830';
-    ctx.fillRect(bx - 3, by - 3, 6, 6);
-    ctx.strokeStyle = '#A08020';
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(bx - 3, by - 3, 6, 6);
-    // Buckle pin
-    ctx.strokeStyle = '#C09828';
-    ctx.lineWidth = 0.6;
-    ctx.beginPath();
-    ctx.moveTo(bx, by - 3);
-    ctx.lineTo(bx, by + 3);
-    ctx.stroke();
-  }
-  drawBuckle(52, 42);
-  drawBuckle(104, 42);
-
-  // Bridle stitching (tiny dashes along straps)
-  ctx.strokeStyle = 'rgba(90,60,30,0.4)';
-  ctx.lineWidth = 0.4;
-  ctx.setLineDash([1.5, 2]);
+  // Reins (from bit area, hanging down)
+  ctx.strokeStyle = bCol;
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(50, 25);
-  ctx.quadraticCurveTo(46, 45, 50, 68);
+  ctx.moveTo(178, 108);
+  ctx.bezierCurveTo(170, 120, 155, 135, 140, 145);
   ctx.stroke();
+
+  // Bit ring (metal circle at mouth)
+  ctx.strokeStyle = '#AAA';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(106, 25);
-  ctx.quadraticCurveTo(110, 45, 106, 68);
+  ctx.arc(180, 108, 5, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Buckle on cheekpiece
+  ctx.fillStyle = '#D4A830';
+  ctx.fillRect(143, 48, 7, 7);
+  ctx.strokeStyle = '#A08020';
+  ctx.lineWidth = 0.8;
+  ctx.strokeRect(143, 48, 7, 7);
+
+  // Bridle stitching
+  ctx.strokeStyle = 'rgba(80,50,25,0.3)';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([2, 2.5]);
+  ctx.beginPath();
+  ctx.moveTo(147, 30);
+  ctx.bezierCurveTo(150, 48, 157, 68, 170, 84);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // === FUR TEXTURE — directional tiny strokes ===
+  // === FUR TEXTURE — directional strokes following the face profile ===
   ctx.lineCap = 'round';
-  for (let i = 0; i < 100; i++) {
-    const x = 45 + Math.random() * 65;
-    const y = 15 + Math.random() * 70;
-    // Direction follows face contour — generally downward
-    const angle = -0.3 + Math.random() * 0.6 + (x < 78 ? -0.2 : 0.2);
-    const len = 1.5 + Math.random() * 2.5;
+  for (let i = 0; i < 150; i++) {
+    const x = 90 + Math.random() * 145;
+    const y = 15 + Math.random() * 100;
+    // Direction: generally pointing toward the nose (right and slightly down)
+    const angle = 0.2 + Math.random() * 0.5;
+    const len = 2 + Math.random() * 3;
     ctx.strokeStyle = i % 3 === 0
-      ? rgba(cs.hi, 0.08)
-      : rgba(cs.dark, 0.06);
-    ctx.lineWidth = 0.4 + Math.random() * 0.3;
+      ? rgba(cs.hi, 0.07) : rgba(cs.dark, 0.05);
+    ctx.lineWidth = 0.4 + Math.random() * 0.4;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
     ctx.stroke();
   }
 
-  // === PLUSH SEAM LINE — subtle stitching down center face ===
-  ctx.strokeStyle = rgba(cs.dark, 0.12);
-  ctx.lineWidth = 0.5;
-  ctx.setLineDash([2, 3]);
+  // === VEIN detail (subtle, on cheek/forehead) ===
+  ctx.strokeStyle = rgba(cs.shadow, 0.12);
+  ctx.lineWidth = 0.6;
   ctx.beginPath();
-  ctx.moveTo(78, 5);
-  ctx.quadraticCurveTo(76, 40, 78, 88);
+  ctx.moveTo(140, 35);
+  ctx.bezierCurveTo(150, 45, 155, 55, 158, 70);
   ctx.stroke();
-  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(125, 60);
+  ctx.bezierCurveTo(135, 65, 145, 68, 155, 72);
+  ctx.stroke();
 
   return c.toDataURL();
 }
@@ -1009,8 +1045,8 @@ class TitleScene extends Phaser.Scene {
       color: '#FFF8DC'
     }).setOrigin(0.5);
 
-    // Show a horse preview
-    this.add.image(GW / 2, GH / 2 - 20, 'chestnut').setScale(1.2);
+    // Show a horse preview (side-view, large)
+    this.add.image(GW / 2, GH / 2 - 10, 'chestnut').setScale(0.65);
 
     // Start prompt
     this.add.rectangle(GW / 2, GH - 160, 400, 50, 0x000000, 0.7);
@@ -1061,8 +1097,8 @@ class SelectScene extends Phaser.Scene {
       // Background circle
       const bg = this.add.circle(x, y, 58, 0x000000, 0.2);
 
-      // Horse image
-      const horse = this.add.image(x, y - 5, key).setScale(0.55);
+      // Horse image (side-view profile)
+      const horse = this.add.image(x, y - 5, key).setScale(0.3);
 
       // Name
       this.add.rectangle(x, y + 58, 100, 24, 0x000000, 0.6);
@@ -1109,7 +1145,7 @@ class SelectScene extends Phaser.Scene {
     const h = this.horses[this.selectedIndex];
     this.selectionRing.setPosition(h.x, h.y);
     this.horses.forEach((item, i) => {
-      item.horse.setScale(i === this.selectedIndex ? 0.7 : 0.55);
+      item.horse.setScale(i === this.selectedIndex ? 0.4 : 0.3);
       item.bg.setFillStyle(i === this.selectedIndex ? 0x2d5016 : 0x000000, i === this.selectedIndex ? 0.3 : 0.2);
     });
   }
@@ -1174,9 +1210,10 @@ class GameScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.player.body.setGravityY(200); // extra gravity for snappier feel
 
-    // Horse head (follows player, visual only)
-    this.playerHorse = this.add.image(150, GROUND_Y - 80, this.selectedHorse);
-    this.playerHorse.setScale(0.5);
+    // Horse head (side-view profile, follows player)
+    this.playerHorse = this.add.image(170, GROUND_Y - 70, this.selectedHorse);
+    this.playerHorse.setScale(0.38);
+    this.playerHorse.setOrigin(0.4, 0.7); // anchor near bottom-center so it rises with player
 
     // Animation
     if (!this.anims.exists('run')) {
@@ -1291,13 +1328,17 @@ class GameScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.gameActive) return;
 
-    // Horse head follows player
-    this.playerHorse.x = this.player.x + 5;
-    this.playerHorse.y = this.player.y - 48;
+    // Horse follows player — positioned so the stick aligns with hands
+    this.playerHorse.x = this.player.x + 22;
+    this.playerHorse.y = this.player.y - 15;
 
     // Bob horse slightly when running on ground
     if (this.isOnGround) {
-      this.playerHorse.y += Math.sin(time * 0.008) * 2;
+      this.playerHorse.y += Math.sin(time * 0.008) * 2.5;
+      this.playerHorse.rotation = Math.sin(time * 0.006) * 0.03; // gentle sway
+    } else {
+      // Tilt forward slightly when jumping
+      this.playerHorse.rotation = -0.08;
     }
 
     // Cloud parallax
