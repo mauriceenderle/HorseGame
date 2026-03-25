@@ -501,43 +501,47 @@ function createHobbyHorseImage(cs) {
   ctx.stroke();
   ctx.restore();
 
-  // === MANE — flowing down the crest of the neck, cascading left ===
+  // === MANE — long wavy flowing strands cascading down the neck ===
   ctx.lineCap = 'round';
-  // Mane attaches along the top of the head/neck
-  for (let i = 0; i < 30; i++) {
-    const t = i / 30;
-    // Follow the crest from poll to withers
-    const sx = 105 + t * 30;
-    const sy = 28 + t * 65 + Math.sin(t * 3) * 5;
-    // Strands fall to the left (away from viewer in side view)
-    const endX = sx - 20 - Math.random() * 15;
-    const endY = sy + 10 + Math.random() * 15;
-    const cpx = sx - 10 + Math.sin(i * 0.5) * 8;
-    const cpy = sy + 5;
+  for (let i = 0; i < 50; i++) {
+    const t = i / 50;
+    // Attach along the crest from poll down to withers
+    const sx = 105 + t * 35;
+    const sy = 25 + t * 70 + Math.sin(t * 3) * 5;
+    // 50% longer strands with gentle wave
+    const len = 55 + Math.random() * 45 + t * 30;
+    const wave = Math.sin(i * 0.6) * 14; // wavy curve
+    const endX = sx - len * 0.65 - Math.random() * 18 + wave;
+    const endY = sy + len * 0.6 + Math.random() * 12;
+    // Two control points for S-curve wave
+    const cp1x = sx - len * 0.2 + Math.sin(i * 0.7) * 15;
+    const cp1y = sy + len * 0.2 + Math.cos(i * 0.4) * 10;
+    const cp2x = sx - len * 0.45 - wave * 0.8;
+    const cp2y = sy + len * 0.42 + Math.sin(i * 0.5) * 8;
 
-    // Shadow
-    ctx.strokeStyle = rgba(cs.mane, 0.4);
-    ctx.lineWidth = 4;
+    // Shadow strand
+    ctx.strokeStyle = rgba(cs.mane, 0.35);
+    ctx.lineWidth = 4.5;
     ctx.beginPath();
     ctx.moveTo(sx + 1, sy + 1);
-    ctx.quadraticCurveTo(cpx + 1, cpy + 1, endX + 1, endY + 1);
+    ctx.bezierCurveTo(cp1x + 1, cp1y + 1, cp2x + 1, cp2y + 1, endX + 1, endY + 1);
     ctx.stroke();
 
     // Main strand
     ctx.strokeStyle = i % 3 === 0 ? cs.maneHi : cs.mane;
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.8;
     ctx.beginPath();
     ctx.moveTo(sx, sy);
-    ctx.quadraticCurveTo(cpx, cpy, endX, endY);
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
     ctx.stroke();
 
-    // Highlight
-    if (i % 4 === 0) {
-      ctx.strokeStyle = rgba(cs.maneHi, 0.35);
-      ctx.lineWidth = 1;
+    // Highlight wisp
+    if (i % 3 === 0) {
+      ctx.strokeStyle = rgba(cs.maneHi, 0.3);
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.moveTo(sx - 1, sy - 1);
-      ctx.quadraticCurveTo(cpx - 1, cpy - 1, endX - 1, endY - 1);
+      ctx.bezierCurveTo(cp1x - 2, cp1y - 2, cp2x - 2, cp2y - 2, endX - 2, endY - 2);
       ctx.stroke();
     }
   }
