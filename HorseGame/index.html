@@ -1141,6 +1141,20 @@ class SelectScene extends Phaser.Scene {
         fontFamily: "'Georgia', serif", fontSize: 14, color: '#FFFFFF'
       }).setOrigin(0.5);
 
+      // Quote below each horse
+      const quotes = [
+        '"If I smell like a horse\nit\'s not a bad thing"',
+        '"Horses Keep\nMe Stable."',
+        '"I Like Horses, Dogs,\nMaybe 3 People."',
+        '"Barn Hair,\nDon\'t Care."',
+        '"You either like horses,\nor you\'re wrong."'
+      ];
+      this.add.rectangle(x, y + 100, 140, 44, 0x000000, 0.5);
+      this.add.text(x, y + 100, quotes[i], {
+        fontFamily: "'Georgia', serif", fontSize: 9, fontStyle: 'italic',
+        color: '#FFE4B5', align: 'center', lineSpacing: 2
+      }).setOrigin(0.5);
+
       this.horses.push({ key, x, y, horse, bg, label });
 
       // Click/tap to select
