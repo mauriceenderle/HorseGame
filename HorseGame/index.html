@@ -1178,27 +1178,19 @@ class SelectScene extends Phaser.Scene {
     this.tweens.add({ targets: [confirmBg, confirmText], scaleX: 1.05, scaleY: 1.05, duration: 600, yoyo: true, repeat: -1 });
     confirmBg.on('pointerdown', () => this.startGame());
 
-    // Controls — compact single-panel layout that fits on mobile landscape
-    this.add.rectangle(GW / 2, GH - 60, 860, 75, 0x000000, 0.8).setStrokeStyle(1, 0x555555);
+    // Controls — centered compact panel
+    this.add.rectangle(GW / 2, GH - 52, GW - 40, 60, 0x000000, 0.8).setStrokeStyle(1, 0x555555);
 
-    // Single row: Desktop | Mobile
-    this.add.text(20, GH - 85, 'DESKTOP', {
-      fontFamily: "'Georgia', serif", fontSize: 11, fontStyle: 'bold', color: '#FFD700'
-    }).setOrigin(0, 0.5);
-    this.add.text(20, GH - 68, 'SPACE/UP = Jump (x3)   |   RIGHT/LEFT = Speed   |   ENTER = Start', {
-      fontFamily: "'Georgia', serif", fontSize: 11, color: '#FFFFFF'
-    }).setOrigin(0, 0.5);
-
-    this.add.text(20, GH - 48, 'MOBILE', {
-      fontFamily: "'Georgia', serif", fontSize: 11, fontStyle: 'bold', color: '#FFD700'
-    }).setOrigin(0, 0.5);
-    this.add.text(20, GH - 33, 'TAP = Jump (x3)   |   Tap horse to select   |   Tap START RACE to begin', {
-      fontFamily: "'Georgia', serif", fontSize: 11, color: '#FFFFFF'
-    }).setOrigin(0, 0.5);
-
-    this.add.text(GW - 20, GH - 40, 'Collect carrots &\nhorseshoes for points!', {
-      fontFamily: "'Georgia', serif", fontSize: 11, fontStyle: 'italic', color: '#90EE90', align: 'right'
-    }).setOrigin(1, 0.5);
+    const cX = GW / 2;
+    this.add.text(cX, GH - 72, 'SPACE/UP: Jump x3 | LEFT/RIGHT: Speed | ENTER: Start', {
+      fontFamily: "'Georgia', serif", fontSize: 10, color: '#FFFFFF'
+    }).setOrigin(0.5, 0.5);
+    this.add.text(cX, GH - 56, 'MOBILE: Tap Left = Slow | Tap Center = Jump | Tap Right = Fast', {
+      fontFamily: "'Georgia', serif", fontSize: 10, color: '#FFFFFF'
+    }).setOrigin(0.5, 0.5);
+    this.add.text(cX, GH - 40, 'Collect carrots & horseshoes for points!', {
+      fontFamily: "'Georgia', serif", fontSize: 10, fontStyle: 'italic', color: '#90EE90'
+    }).setOrigin(0.5, 0.5);
 
     // Keyboard
     this.input.keyboard.on('keydown-LEFT', () => {
@@ -1329,9 +1321,21 @@ class GameScene extends Phaser.Scene {
     // Speed control — RIGHT arrow speeds up, LEFT slows down
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // Touch/click — tap anywhere to jump
+    // Touch/click — left third slows, right third speeds up, middle jumps
+    this.touchSpeedDir = 0; // -1 slow, 0 none, +1 fast
     this.input.on('pointerdown', (pointer) => {
-      if (pointer.y > 60) this.jump();
+      if (pointer.y <= 60) return; // ignore HUD taps
+      const third = GW / 3;
+      if (pointer.x < third) {
+        this.touchSpeedDir = -1;
+      } else if (pointer.x > third * 2) {
+        this.touchSpeedDir = 1;
+      } else {
+        this.jump();
+      }
+    });
+    this.input.on('pointerup', () => {
+      this.touchSpeedDir = 0;
     });
 
     // HUD
@@ -1414,10 +1418,10 @@ class GameScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.gameActive) return;
 
-    // === SPEED CONTROL — right arrow speeds up, left slows down ===
-    if (this.cursors.right.isDown) {
+    // === SPEED CONTROL — keyboard arrows + touch left/right thirds ===
+    if (this.cursors.right.isDown || this.touchSpeedDir === 1) {
       this.scrollSpeed = Math.min(14, this.scrollSpeed + 0.08);
-    } else if (this.cursors.left.isDown) {
+    } else if (this.cursors.left.isDown || this.touchSpeedDir === -1) {
       this.scrollSpeed = Math.max(2, this.scrollSpeed - 0.08);
     }
     // Show speed feedback
